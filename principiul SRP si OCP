@@ -1,0 +1,85 @@
+using System;
+
+public class Order
+{
+    public int Id { get; set; }
+    public double Amount { get; set; }
+}
+
+public interface IPaymentProcessor
+{
+    void ProcessPayment(Order order);
+}
+
+public class CreditCardPaymentProcessor : IPaymentProcessor
+{
+    public void ProcessPayment(Order order)
+    {
+        Console.WriteLine("Processing credit card payment...");
+    }
+}
+
+public class PayPalPaymentProcessor : IPaymentProcessor
+{
+    public void ProcessPayment(Order order)
+    {
+        Console.WriteLine("Processing PayPal payment...");
+    }
+}
+
+public class BankTransferPaymentProcessor : IPaymentProcessor
+{
+    public void ProcessPayment(Order order)
+    {
+        Console.WriteLine("Processing bank transfer payment...");
+    }
+}
+
+public class OrderRepository
+{
+    public void SaveToDatabase(Order order)
+    {
+        Console.WriteLine("Saving order to database...");
+    }
+
+    public Order LoadFromDatabase(int orderId)
+    {
+        Console.WriteLine("Loading order from database...");
+        return new Order(); // Exemplar fictiv
+    }
+}
+
+public class OrderService
+{
+    private readonly OrderRepository _orderRepository;
+
+    public OrderService()
+    {
+        _orderRepository = new OrderRepository();
+    }
+
+    public void ProcessOrder(Order order, IPaymentProcessor paymentProcessor)
+    {
+        paymentProcessor.ProcessPayment(order);
+        _orderRepository.SaveToDatabase(order);
+    }
+
+    public Order GetOrder(int orderId)
+    {
+        return _orderRepository.LoadFromDatabase(orderId);
+    }
+}
+
+public class Program
+{
+    public static void Main(string[] args)
+    {
+        var order = new Order { Id = 1, Amount = 100.0 };
+        var orderService = new OrderService();
+
+        IPaymentProcessor paymentProcessor = new CreditCardPaymentProcessor();
+        orderService.ProcessOrder(order, paymentProcessor);
+
+        orderService.GetOrder(1);
+    }
+}
